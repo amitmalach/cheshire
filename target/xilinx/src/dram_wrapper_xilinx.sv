@@ -48,6 +48,16 @@ module dram_wrapper_xilinx #(
     integer StrobeWidth;
   } dram_cfg_t;
 
+`ifdef TARGET_VCU118
+  localparam dram_cfg_t cfg = '{
+    EnCDC         : 1, // 300 MHz axi (attention CDC logdepth)
+    IdWidth       : 8,
+    AddrWidth     : 31,
+    DataWidth     : 512,
+    StrobeWidth   : 64
+  };
+`endif
+
 `ifdef TARGET_VCU128
   localparam dram_cfg_t cfg = '{
     EnCDC         : 1, // 333 MHz axi (attention CDC logdepth)

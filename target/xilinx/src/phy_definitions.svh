@@ -14,6 +14,15 @@
   `define USE_VIO
 `endif
 
+`ifdef TARGET_VCU118
+  `define USE_RESET
+  `define USE_JTAG
+  `define USE_DDR4
+  `define USE_QSPI
+  `define USE_STARTUPE3
+  `define USE_VIO
+`endif
+
 `ifdef TARGET_GENESYS2
   `define USE_RESETN
   `define USE_JTAG
@@ -62,6 +71,13 @@
   inout  [71:0]        c0_ddr4_dq, \
   inout  [8:0]         c0_ddr4_dqs_c, \
   inout  [8:0]         c0_ddr4_dqs_t, \
+`endif \
+`ifdef TARGET_VCU118 \
+  output [0:0]         c0_ddr4_cs_n, \
+  inout  [7:0]         c0_ddr4_dm_dbi_n, \
+  inout  [63:0]        c0_ddr4_dq, \
+  inout  [7:0]         c0_ddr4_dqs_c, \
+  inout  [7:0]         c0_ddr4_dqs_t, \
 `endif \
 `ifdef TARGET_ZCU102 \
   output [0:0]         c0_ddr4_cs_n, \
