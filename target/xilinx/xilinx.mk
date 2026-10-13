@@ -25,6 +25,20 @@ ifeq ($(BOARD),vcu128)
 		xilinx_targs += -t bscane
 	endif
 endif
+ifeq ($(BOARD),vcu118)
+	# Plain `:=` here: the axi_rt makefile included before this one presets
+	# XILINX_PART and XILINX_BOARD for the VCU128, so `?=` would be ignored.
+	XILINX_PART  := xcvu9p-flga2104-2L-e
+	XILINX_BOARD := xilinx.com:vcu118:part0:2.4
+	# Local hardware server and the onboard Digilent JTAG-SMT2-NC
+	XILINX_PORT  ?= 3121
+	XILINX_HOST  ?= localhost
+	FPGA_PATH    ?= xilinx_tcf/Digilent/210308B0AD13
+	ips-names    := xlnx_mig_ddr4 xlnx_clk_wiz xlnx_vio
+	ifeq ($(INT_JTAG),1)
+		xilinx_targs += -t bscane
+	endif
+endif
 ifeq ($(BOARD),genesys2)
 	XILINX_PART  ?= xc7k325tffg900-2
 	XILINX_BOARD ?= digilentinc.com:genesys2:part0:1.1

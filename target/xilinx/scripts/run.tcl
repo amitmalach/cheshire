@@ -12,7 +12,7 @@ read_ip $ips
 
 # Contraints files selection
 switch $::env(BOARD) {
-  "genesys2" - "kc705" - "vc707" - "vcu128" - "zcu102" {
+  "genesys2" - "kc705" - "vc707" - "vcu118" - "vcu128" - "zcu102" {
     import_files -fileset constrs_1 -norecurse constraints/cheshire.xdc
     import_files -fileset constrs_1 -norecurse constraints/$::env(BOARD).xdc
   }
