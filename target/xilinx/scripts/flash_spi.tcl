@@ -18,6 +18,10 @@ if {$::env(BOARD) eq "vcu128"} {
   set hw_device [get_hw_devices xcvu37p_0]
   set hw_mem_device [lindex [get_cfgmem_parts {mt25qu02g-spi-x1_x2_x4}] 0]
 }
+if {$::env(BOARD) eq "vcu118"} {
+  set hw_device [get_hw_devices xcvu9p_0]
+  set hw_mem_device [lindex [get_cfgmem_parts {mt25qu01g-spi-x1_x2_x4}] 0]
+}
 
 # Create flash configuration file
 write_cfgmem -force -format mcs -size 256 -interface SPIx4 \
