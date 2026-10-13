@@ -19,12 +19,19 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+      -
+        # cva6-sdk points its buildroot submodule at git://git.buildroot.net,
+        # which no longer serves; buildroot now lives on GitLab.
+        name: Checkout submodules
+        run: >-
+          git -c url."https://gitlab.com/buildroot.org/buildroot.git".insteadOf=git://git.buildroot.net/buildroot
+          submodule update --init --recursive
       -
         name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
           cache: pip
