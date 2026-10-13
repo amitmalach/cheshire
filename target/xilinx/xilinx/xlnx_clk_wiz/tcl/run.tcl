@@ -42,6 +42,30 @@ if {$::env(BOARD) eq "vcu128"} {
                         ] [get_ips $ipName]
 }
 
+if {$::env(BOARD) eq "vcu118"} {
+    # 250 MHz C1 reference clock, shared with the DDR4 controller, as in the
+    # VCU118 port of upstream Cheshire main (PR #240). Output names and
+    # frequencies are this flow's, not the reference's; the wizard derives the
+    # MMCM settings (250 * 24 / 5 = 1200 MHz VCO, dividers 12/24/60/120).
+    set_property -dict  [list CONFIG.CLK_IN1_BOARD_INTERFACE {Custom} \
+                              CONFIG.RESET_BOARD_INTERFACE {Custom} \
+                              CONFIG.PRIM_SOURCE {No_buffer} \
+                              CONFIG.PRIM_IN_FREQ {250.000} \
+                              CONFIG.CLKOUT2_USED {true} \
+                              CONFIG.CLKOUT3_USED {true} \
+                              CONFIG.CLKOUT4_USED {true} \
+                              CONFIG.CLK_OUT1_PORT {clk_100} \
+                              CONFIG.CLK_OUT2_PORT {clk_50} \
+                              CONFIG.CLK_OUT3_PORT {clk_20} \
+                              CONFIG.CLK_OUT4_PORT {clk_10} \
+                              CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {50.000} \
+                              CONFIG.CLKOUT3_REQUESTED_OUT_FREQ {20.000} \
+                              CONFIG.CLKOUT4_REQUESTED_OUT_FREQ {10.000} \
+                              CONFIG.USE_RESET {true} \
+                              CONFIG.NUM_OUT_CLKS {4} \
+                        ] [get_ips $ipName]
+}
+
 if {$::env(BOARD) eq "zcu102"} {
     set_property -dict  [list CONFIG.PRIM_SOURCE {No_buffer} \
                               CONFIG.PRIM_IN_FREQ {300.000} \
