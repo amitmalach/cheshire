@@ -145,7 +145,7 @@ packages:
     - register_interface
     - tech_cells_generic
   pulp-c910:
-    revision: 36bb8d9921f4ac888e15bfa5bfe356717c76e8b3
+    revision: 0fdc0f299ea24a701e9768e335eceaf95dff395c
     version: 0.2.1
     source:
       Git: https://github.com/pulp-platform/pulp-c910.git
@@ -163,7 +163,7 @@ packages:
     - common_cells
     - common_verification
   riscv-dbg:
-    revision: f69f6342f69fff28655e1394ec889c0360bcca8b
+    revision: 459b32003731fa48d028b99ed91636b1457ef528
     version: null
     source:
       Git: https://github.com/pulp-platform/riscv-dbg.git
