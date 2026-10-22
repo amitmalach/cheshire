@@ -180,7 +180,7 @@ packages:
     - common_cells
     - register_interface
   tech_cells_generic:
-    revision: 9d0ad0f009dbafe59e9351d2906193b1fd07bedb
+    revision: d1f4395b3d350fed793b715eb430986216058ae3
     version: null
     source:
       Git: https://github.com/amitmalach/tech_cells_generic.git

@@ -28,8 +28,8 @@ dependencies:
   opentitan_peripherals:    { git: "https://github.com/pulp-platform/opentitan_peripherals.git",  version: 0.4.0  }
   register_interface:       { git: "https://github.com/pulp-platform/register_interface.git",     version: 0.4.2  }
   riscv-dbg:                { git: "https://github.com/pulp-platform/riscv-dbg.git",              rev: 459b3200   } # zx/cheshire_c910
-  tech_cells_generic:       { git: "https://github.com/amitmalach/tech_cells_generic.git",     rev: 9d0ad0f0   } # c910-vcu118: v0.2.13 plus the Vivado 2026.1 tc_sram_xilinx fix
   serial_link:              { git: "https://github.com/pulp-platform/serial_link.git",            version: 1.1.0  }
+  tech_cells_generic:       { git: "https://github.com/amitmalach/tech_cells_generic.git",        rev: d1f4395b   } # c910-vcu118
   unbent:                   { git: "https://github.com/pulp-platform/unbent.git",                 version: 0.1.5  }
   pulp-c910:                { git: "https://github.com/pulp-platform/pulp-c910.git",              version: 0.2.1  }
 
