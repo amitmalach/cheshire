@@ -9,7 +9,10 @@
 # 250 MHz ref clock (C1 DDR4 reference, shared with the clock wizard)
 set SYS_TCK 4
 create_clock -period $SYS_TCK -name sys_clk [get_pins u_ibufg_sys_clk/O]
-set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_pins u_ibufg_sys_clk/O]
+# The clock enters in bank 71 and may feed a clock manager in another clock
+# region. Allow the backbone route on the input buffer's output net, the object
+# UG912 documents for this property (vcu128.xdc names the pin instead).
+set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets -of [get_pins u_ibufg_sys_clk/O]]
 
 #############
 # Mig clock #
@@ -31,13 +34,20 @@ set_max_delay -through $MIG_RST_O $MIG_TCK
 # CDCs #
 ########
 
+# The DRAM AXI CDC is a cdc_fifo_gray per channel. Its header asks for the
+# pointer and data paths to be bound to the smaller of the two clock periods,
+# here the MIG UI clock period, in both directions; hold is false-pathed in
+# cheshire.xdc. The reference does the same. The 20 ns SoC-to-MIG bounds that
+# vcu128.xdc carries since 22962d0 are not safe: the MIG side reads a slot two
+# of its own cycles after the pointer arrives, about 6.6 ns.
+
 set_max_delay -datapath \
  -from [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_dst/i_cdc_fifo_gray_*/*reg*/C] \
   -to [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_src/i_cdc_fifo_gray_*/*i_sync/reg*/D] $MIG_TCK
 
 set_max_delay -datapath \
  -from [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_src/i_cdc_fifo_gray_*/*reg*/C] \
-  -to [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_dst/i_cdc_fifo_gray_*/*i_sync/reg*/D] 20
+  -to [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_dst/i_cdc_fifo_gray_*/*i_sync/reg*/D] $MIG_TCK
 
 set_max_delay -datapath \
  -from [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_dst/i_cdc_fifo_gray_*/*reg*/C] \
@@ -45,7 +55,7 @@ set_max_delay -datapath \
 
 set_max_delay -datapath \
  -from [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_src/i_cdc_fifo_gray_*/*reg*/C] \
-  -to [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_dst/i_cdc_fifo_gray_*/i_spill_register/spill_register_flushable_i/*reg*/D] 20
+  -to [get_pins i_dram_wrapper/gen_cdc.i_axi_cdc_mig/i_axi_cdc_dst/i_cdc_fifo_gray_*/i_spill_register/spill_register_flushable_i/*reg*/D] $MIG_TCK
 
 ###############
 # ASSIGN PINS #
