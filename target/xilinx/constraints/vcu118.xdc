@@ -90,3 +90,13 @@ set_property IOSTANDARD DIFF_SSTL12 [get_ports sys_clk_n]
 set_property IOSTANDARD DIFF_SSTL12 [get_ports sys_clk_p]
 set_property PACKAGE_PIN E12 [get_ports sys_clk_p] ;# Bank  71 VCCO - VCC1V2_FPGA - IO_L13P_T2L_N0_GC_QBC_71
 set_property PACKAGE_PIN D12 [get_ports sys_clk_n] ;# Bank  71 VCCO - VCC1V2_FPGA - IO_L13N_T2L_N1_GC_QBC_71
+
+#############
+# Bitstream #
+#############
+
+# Quad SPI configuration from the onboard flash (MT25QU01G, SW16 = 0001), as
+# the VCU118 pull into Cheshire main reference sets for every board in its
+# shared constraints; kept in this board file so other board targets are
+# untouched. Matches the SPIx4 image the flash script writes.
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
