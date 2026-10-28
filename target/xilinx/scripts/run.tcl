@@ -109,7 +109,10 @@ wait_on_run impl_1
 launch_runs impl_1 -to_step write_bitstream
 wait_on_run impl_1
 
-# Check timing constraints
+# Check timing constraints on the routed run. The design open at this point is
+# the synthesized one (open_run synth_1 above), whose estimate is not the
+# routed result; open the implemented run first, as upstream Cheshire main does.
+open_run impl_1
 set timingrep [report_timing_summary -no_header -no_detailed_paths -return_string]
 if {[info exists ::env(CHECK_TIMING)] && $::env(CHECK_TIMING)==1} {
   if {! [string match -nocase {*timing constraints are met*} $timingrep]} {
