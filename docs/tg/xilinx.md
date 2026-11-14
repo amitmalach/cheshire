@@ -7,6 +7,7 @@ This page describes how to map Cheshire on Xilinx FPGAs to *execute baremetal pr
 We currently provide working setups for:
 
 - Digilent Genesys 2 with Vivado `>= 2020.2`
+- Xilinx VCU118 with Vivado `2026.1`
 - Xilinx VCU128 with Vivado `>= 2020.2`
 
 We are working on support for more boards in the future.
@@ -24,17 +25,17 @@ make chs-hw-all
 Generate the bitstream `target/xilinx/out/cheshire_top_xilinx.bit` by running:
 
 ```bash
-make chs-xil-all [VIVADO=version] [BOARD={genesys2,vcu128}] [MODE={batch,gui}] [INT-JTAG={0,1}]
+make chs-xil-all [VIVADO=version] [BOARD={genesys2,vcu118,vcu128}] [MODE={batch,gui}] [INT-JTAG={0,1}]
 ```
 
 See the argument list below:
 
-| Argument | Relevance | Description                                                                                                                           |
-|----------|-----------|---------------------------------------------------------------------------------------------------------------------------------------|
-| VIVADO   | all       | Vivado command to use **(default "vitis-2020.2 vivado")**                                                                             |
-| BOARD    | all       | `genesys-2` **(default)** <br>`vcu128`                                                                                                |
-| INT-JTAG | vcu128    | `0` Connect the RV debug module to an external JTAG chain<br>`1` Connect the RV debug module to the internal JTAG chain **(default)** |
-| MODE     | all       | `batch` Compile in Vivado shell<br>`gui` Compile in Vivado gui                                                                        |
+| Argument | Relevance      | Description                                                                                                                           |
+|----------|----------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| VIVADO   | all            | Vivado command to use **(default "vitis-2020.2 vivado")**                                                                             |
+| BOARD    | all            | `genesys-2` **(default)** <br>`vcu118`<br>`vcu128`                                                                                    |
+| INT-JTAG | vcu118, vcu128 | `0` Connect the RV debug module to an external JTAG chain<br>`1` Connect the RV debug module to the internal JTAG chain **(default)** |
+| MODE     | all            | `batch` Compile in Vivado shell<br>`gui` Compile in Vivado gui                                                                        |
 
 The build time takes a couple of hours.
 
@@ -55,6 +56,21 @@ The above target used Bender and the file `Bender.yml` to generate the filelist 
 >   | 7      | Test mode; *leave at zero*                      |
 > 
 > The reset, JTAG TAP, UART, I2C, and VGA are all connected to their onboard logic or ports. The UART has *no flow control*. The microSD slot is connected to chip select 0 of the SPI host peripheral. Serial link and GPIOs are currently not available.
+> 
+### Xilinx VCU118
+> Bring-up needs two USB cables: micro-USB J106 for JTAG and J4 for the UART. The UART runs at 115200 baud with *no flow control*; of the two serial ports its CP2105 bridge provides, the SoC's is the "Standard" one. The microSD slot is not reachable by the FPGA (it belongs to the board's system controller). Internal JTAG is only built in with `INT_JTAG=1`:
+> 
+> ```bash
+> make chs-xil-all BOARD=vcu118 VIVADO=vivado INT_JTAG=1 CHECK_TIMING=1
+> ```
+> 
+> #### Bootmode and VIOs
+> 
+> As there are no switches on this board, the bootmode (see [Boot ROM](../um/sw.md#boot-rom)) is selected by Xilinx VIOs that can be set in the Vivado GUI (see [Using Vivado GUI](#bringup_vivado_gui)). `util/openocd_vcu118.cfg` loads programs over the system bus, behind the C910's caches, so reset through `vio_reset` before loading over a program that has already run.
+> 
+> #### External JTAG chain
+> 
+> The VCU118's JTAG module on J106 is used by Vivado to program the bitstream and interact with its IPs (ILAs, VIOs, ...), and with `INT_JTAG=1` it also carries the RV64 host's debug module. Only one program can hold it: Vivado's hardware server keeps it after Vivado exits, so stop it (`pkill -x hw_server; pkill -x cs_server`) before starting OpenOCD, and stop OpenOCD before opening the hardware manager again. By using `INT_JTAG=0` the debug module is instead connected to an external JTAG adapter on the PMOD header J53, whose connector side is 3.3 V; the adapter must provide the pull-ups. This fallback is untested. See the connections in `vcu118.xdc`.
 > 
 ### Xilinx VCU128
 > #### Bootmode and VIOs
@@ -97,6 +113,7 @@ Change the values to the appropriate ones (can be found in the Vivado GUI) and p
 
 ```bash
 make chs-xil-program MODE=batch BOARD=vcu128
+make chs-xil-program MODE=batch BOARD=vcu118
 ```
 
 ### Loading binary and debugging with OpenOCD
@@ -104,6 +121,8 @@ make chs-xil-program MODE=batch BOARD=vcu128
 To establish a debug bridge over JTAG, ensure the target is in a debuggable state (for example by setting the boot mode to 0 before resetting) then launch OpenOCD with:
 
 ```bash
+# VCU118 : Internal JTAG
+openocd -f util/openocd_vcu118.cfg
 # VCU128 : Internal JTAG
 openocd -f util/openocd_vcu128.cfg
 # Genesys2 : Internal JTAG
